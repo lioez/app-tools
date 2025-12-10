@@ -53,15 +53,16 @@ jobs:
         working-directory: ${{ env.WORK_DIR }}
         run: npm run build
 
-      - name: 部署到Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # 首次部署会自动创建项目，--commit-dirty=true 忽略 git 状态警告
-          command: pages project create iconcraft-pro --production-branch=main || true
+      - name: 安装Wrangler
+        run: npm install -g wrangler
 
-      - name: 上传到Cloudflare Pages
+      - name: 创建Cloudflare Pages项目（如不存在）
+        run: wrangler pages project create iconcraft-pro --production-branch=main || true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: 部署到Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
