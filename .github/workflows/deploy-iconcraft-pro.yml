@@ -1,14 +1,23 @@
-name: 部署到Cloudflare Pages
+name: 部署 IconCraft Pro 到 Cloudflare Pages
 
 on:
   push:
     branches:
       - main
       - master
+    # 只有当这个目录下的文件变化时才触发
+    paths:
+      - 'iconcraft-pro---智能图标工坊/**'
+      - '.github/workflows/deploy-iconcraft-pro.yml'
   pull_request:
     branches:
       - main
       - master
+    paths:
+      - 'iconcraft-pro---智能图标工坊/**'
+      - '.github/workflows/deploy-iconcraft-pro.yml'
+  # 允许手动触发
+  workflow_dispatch:
 
 # 设置工作目录为工具项目目录
 env:

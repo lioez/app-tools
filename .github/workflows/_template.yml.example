@@ -1,0 +1,69 @@
+# 新工具部署工作流模板
+#
+# 使用方法：
+# 1. 复制此文件到 .github/workflows/ 目录
+# 2. 重命名为 deploy-你的工具名.yml
+# 3. 修改下面标注 [修改] 的地方
+#
+# 部署后的访问地址：https://你的项目名.pages.dev
+
+name: 部署 [工具名称] 到 Cloudflare Pages  # [修改] 改成你的工具名称
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '[你的工具文件夹名]/**'           # [修改] 改成你的工具文件夹名
+      - '.github/workflows/deploy-[你的工具名].yml'  # [修改] 改成这个文件的名称
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - '[你的工具文件夹名]/**'           # [修改] 同上
+      - '.github/workflows/deploy-[你的工具名].yml'  # [修改] 同上
+  workflow_dispatch:  # 允许手动触发
+
+env:
+  WORK_DIR: ./[你的工具文件夹名]          # [修改] 改成你的工具文件夹名
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORK_DIR }}/package-lock.json
+
+      - name: 安装依赖
+        working-directory: ${{ env.WORK_DIR }}
+        run: npm ci
+
+      # 如果你的工具需要下载额外资源，取消下面的注释
+      # - name: 下载资源文件
+      #   working-directory: ${{ env.WORK_DIR }}
+      #   run: npm run download-resources
+
+      - name: 构建应用
+        working-directory: ${{ env.WORK_DIR }}
+        run: npm run build
+
+      - name: 部署到Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ${{ env.WORK_DIR }}
+          command: pages deploy dist --project-name=[你的项目名]  # [修改] 改成 Cloudflare Pages 项目名（会成为子域名）
