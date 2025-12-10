@@ -1,0 +1,26 @@
+{
+  "name": "iconcraft-pro---智能图标工坊",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "download-models": "node scripts/download-models.js",
+    "prebuild:ci": "npm run download-models"
+  },
+  "dependencies": {
+    "@imgly/background-removal": "1.4.5",
+    "lucide-react": "^0.556.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1"
+  },
+  "devDependencies": {
+    "@imgly/background-removal-data": "^1.4.5",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

@@ -1,0 +1,53 @@
+name: 部署到Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+# 设置工作目录为工具项目目录
+env:
+  WORK_DIR: ./iconcraft-pro---智能图标工坊
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORK_DIR }}/package-lock.json
+
+      - name: 安装依赖
+        working-directory: ${{ env.WORK_DIR }}
+        run: npm ci
+
+      - name: 下载模型文件
+        working-directory: ${{ env.WORK_DIR }}
+        run: npm run download-models
+
+      - name: 构建应用
+        working-directory: ${{ env.WORK_DIR }}
+        run: npm run build
+
+      - name: 部署到Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ${{ env.WORK_DIR }}
+          command: pages deploy dist --project-name=iconcraft-pro
