@@ -84,4 +84,4 @@ jobs:
           echo "生产环境网址: https://[你的项目名].pages.dev" >> $GITHUB_STEP_SUMMARY  # [修改] 改成项目名
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "项目: [你的项目名]" >> $GITHUB_STEP_SUMMARY  # [修改] 改成项目名
-          echo "部署时间: $(date '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "部署时间: $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') (北京时间)" >> $GITHUB_STEP_SUMMARY

@@ -77,4 +77,4 @@ jobs:
           echo "生产环境网址: https://iconcraft-pro.pages.dev" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "项目: iconcraft-pro" >> $GITHUB_STEP_SUMMARY
-          echo "部署时间: $(date '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "部署时间: $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') (北京时间)" >> $GITHUB_STEP_SUMMARY
