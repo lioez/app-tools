@@ -58,5 +58,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: ${{ env.WORK_DIR }}
-          command: pages deploy dist --project-name=iconcraft-pro
+          command: pages deploy ${{ env.WORK_DIR }}/dist --project-name=iconcraft-pro
