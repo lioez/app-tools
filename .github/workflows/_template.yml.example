@@ -60,10 +60,17 @@ jobs:
         working-directory: ${{ env.WORK_DIR }}
         run: npm run build
 
+      - name: 创建Cloudflare Pages项目（如不存在）
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # 首次部署会自动创建项目，已存在则跳过
+          command: pages project create [你的项目名] --production-branch=main || true  # [修改] 改成项目名
+
       - name: 部署到Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: ${{ env.WORK_DIR }}
-          command: pages deploy dist --project-name=[你的项目名]  # [修改] 改成 Cloudflare Pages 项目名（会成为子域名）
+          command: pages deploy ${{ env.WORK_DIR }}/dist --project-name=[你的项目名] --commit-dirty=true  # [修改] 改成项目名

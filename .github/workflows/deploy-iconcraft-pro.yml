@@ -58,4 +58,12 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ${{ env.WORK_DIR }}/dist --project-name=iconcraft-pro
+          # 首次部署会自动创建项目，--commit-dirty=true 忽略 git 状态警告
+          command: pages project create iconcraft-pro --production-branch=main || true
+
+      - name: 上传到Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ${{ env.WORK_DIR }}/dist --project-name=iconcraft-pro --commit-dirty=true
