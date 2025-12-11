@@ -53,22 +53,13 @@ jobs:
           API_BASE_URL: ${{ secrets.EDGE_BOOKMARK_API_BASE_URL }}
           MODEL_NAME: ${{ secrets.EDGE_BOOKMARK_MODEL_NAME }}
 
-      - name: 安装Wrangler
-        run: npm install -g wrangler
-
-      - name: 创建Cloudflare Pages项目（如不存在）
-        run: wrangler pages project create edge-bookmark --production-branch=main || true
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
       - name: 部署到Cloudflare Pages
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ${{ env.WORK_DIR }}/dist --project-name=edge-bookmark --commit-dirty=true
+          command: pages deploy ${{ env.WORK_DIR }}/dist --project-name=edge-bookmark --branch=main
 
       - name: ✅ 部署完成
         run: |
