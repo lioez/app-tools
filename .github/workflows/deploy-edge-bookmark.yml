@@ -1,0 +1,80 @@
+name: 部署 Edge Bookmark 到 Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    # 只有当这个目录下的文件变化时才触发
+    paths:
+      - 'edge-bookmark/**'
+      - '.github/workflows/deploy-edge-bookmark.yml'
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'edge-bookmark/**'
+      - '.github/workflows/deploy-edge-bookmark.yml'
+  # 允许手动触发
+  workflow_dispatch:
+
+# 设置工作目录为工具项目目录
+env:
+  WORK_DIR: ./edge-bookmark
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ${{ env.WORK_DIR }}/package-lock.json
+
+      - name: 安装依赖
+        working-directory: ${{ env.WORK_DIR }}
+        run: npm ci
+
+      - name: 构建应用
+        working-directory: ${{ env.WORK_DIR }}
+        run: npm run build
+        env:
+          API_KEY: ${{ secrets.EDGE_BOOKMARK_API_KEY }}
+          API_BASE_URL: ${{ secrets.EDGE_BOOKMARK_API_BASE_URL }}
+          MODEL_NAME: ${{ secrets.EDGE_BOOKMARK_MODEL_NAME }}
+
+      - name: 安装Wrangler
+        run: npm install -g wrangler
+
+      - name: 创建Cloudflare Pages项目（如不存在）
+        run: wrangler pages project create edge-bookmark --production-branch=main || true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: 部署到Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ${{ env.WORK_DIR }}/dist --project-name=edge-bookmark --commit-dirty=true
+
+      - name: ✅ 部署完成
+        run: |
+          echo "## 🎉 部署成功！" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "生产环境网址: https://edge-bookmark.pages.dev" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "项目: edge-bookmark" >> $GITHUB_STEP_SUMMARY
+          echo "部署时间: $(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S') (北京时间)" >> $GITHUB_STEP_SUMMARY

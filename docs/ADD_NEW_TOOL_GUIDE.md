@@ -100,13 +100,7 @@ app-tools/                           ← 仓库根目录
 
 **Q: 万一有人已经注册了 `iconcraft-pro.pages.dev` 怎么办？**
 
-A: **不用担心！** 这有几个原因：
-
-- ✅ Cloudflare Pages 项目名称在**你的账户内必须唯一**，全局不需要
-- ✅ `https://iconcraft-pro.pages.dev` 是 Cloudflare 自动生成的，绑定到你的账户
-- ✅ 每个 Cloudflare 账户的 `pages.dev` 子域是独立的，即使名字相同也不会冲突
-
-**类比：** 就像 GitHub Pages，很多人都能有 `project-name.github.io`，但只要在自己的账户下就没问题。
+A: **换个名字！** 
 
 #### 2. 项目命名规则
 

@@ -1,0 +1,5 @@
+{
+  "name": "Edge Bookmark AI Organizer",
+  "description": "一个智能书签管理工具，支持导入 Edge/Chrome 导出的书签 HTML 文件，并利用 Google Gemini AI 自动进行语义分类整理。",
+  "requestFramePermissions": []
+}
